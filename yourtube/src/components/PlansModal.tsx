@@ -132,61 +132,63 @@ export default function PlansModal({
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="w-full max-w-xl mx-4 bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden relative">
-                {/* Header */}
-                <div className="bg-gradient-to-r from-red-600 to-orange-500 px-6 py-6 text-white text-center relative">
-                    <button onClick={onClose} className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="w-full max-w-xl max-h-[90vh] flex flex-col bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden relative">
+                {/* Header (Fixed) */}
+                <div className="bg-gradient-to-r from-red-600 to-orange-500 px-6 py-4 md:py-6 text-white text-center flex-shrink-0 relative">
+                    <button onClick={onClose} className="absolute top-3 right-3 md:top-4 md:right-4 text-white/80 hover:text-white transition-colors">
                         <X size={20} />
                     </button>
-                    <Crown size={32} className="mx-auto mb-3 text-yellow-300" />
-                    <h2 className="text-2xl font-bold">{title}</h2>
-                    <p className="text-white/90 text-sm mt-1">{subtitle}</p>
+                    <Crown size={28} className="mx-auto mb-2 md:mb-3 text-yellow-300 md:w-8 md:h-8" />
+                    <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
+                    <p className="text-white/90 text-xs md:text-sm mt-1">{subtitle}</p>
                 </div>
 
-                {/* Plan cards */}
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {PLANS.map((plan) => (
-                        <div
-                            key={plan.key}
-                            className={`relative rounded-xl border-2 ${plan.border} ${plan.bg} p-4 flex flex-col items-center text-center`}
-                        >
-                            {plan.popular && (
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full shadow-sm">
-                                    Popular
-                                </span>
-                            )}
-                            <span className="text-3xl mb-2">{plan.emoji}</span>
-                            <h3 className="font-bold text-base dark:text-zinc-100">{plan.label}</h3>
-                            <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1 mb-3">
-                                {plan.watchMin ? `${plan.watchMin} min watch` : "Unlimited ♾️"}
-                            </p>
-                            <p className="text-xl font-extrabold text-gray-800 dark:text-zinc-100">₹{plan.price}</p>
-                            <Button
-                                size="sm"
-                                className={`mt-4 w-full text-white bg-gradient-to-r ${plan.color} hover:opacity-90 text-sm font-semibold`}
-                                onClick={() => handlePlanSelect(plan)}
-                                disabled={!!paying}
+                {/* Body (Scrollable on small screens) */}
+                <div className="p-4 md:p-6 overflow-y-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {PLANS.map((plan) => (
+                            <div
+                                key={plan.key}
+                                className={`relative rounded-xl border-2 ${plan.border} ${plan.bg} p-4 flex flex-col items-center text-center`}
                             >
-                                {paying === plan.key ? "Wait…" : "Upgrade"}
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="px-6 pb-6 mt-2">
-                    <ul className="space-y-2">
-                        {[
-                            "Unlimited downloads on Gold Plan (Free/Bronze/Silver get 1/day)",
-                            "Invoice emailed instantly to your registered address",
-                            "Secure test mode payment via Razorpay",
-                        ].map((t) => (
-                            <li key={t} className="flex items-start gap-2 text-xs text-gray-500 dark:text-zinc-400">
-                                <CheckCircle size={14} className="text-green-500 dark:text-green-400 shrink-0 mt-0.5" />
-                                {t}
-                            </li>
+                                {plan.popular && (
+                                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full shadow-sm">
+                                        Popular
+                                    </span>
+                                )}
+                                <span className="text-3xl mb-2">{plan.emoji}</span>
+                                <h3 className="font-bold text-base dark:text-zinc-100">{plan.label}</h3>
+                                <p className="text-xs text-gray-500 dark:text-zinc-400 mt-1 mb-3">
+                                    {plan.watchMin ? `${plan.watchMin} min watch` : "Unlimited ♾️"}
+                                </p>
+                                <p className="text-xl font-extrabold text-gray-800 dark:text-zinc-100">₹{plan.price}</p>
+                                <Button
+                                    size="sm"
+                                    className={`mt-4 w-full text-white bg-gradient-to-r ${plan.color} hover:opacity-90 text-sm font-semibold`}
+                                    onClick={() => handlePlanSelect(plan)}
+                                    disabled={!!paying}
+                                >
+                                    {paying === plan.key ? "Wait…" : "Upgrade"}
+                                </Button>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
+
+                    <div className="mt-6 pb-2">
+                        <ul className="space-y-2">
+                            {[
+                                "Unlimited downloads on Gold Plan (Free/Bronze/Silver get 1/day)",
+                                "Invoice emailed instantly to your registered address",
+                                "Secure test mode payment via Razorpay",
+                            ].map((t) => (
+                                <li key={t} className="flex items-start gap-2 text-[11px] md:text-xs text-gray-500 dark:text-zinc-400">
+                                    <CheckCircle size={14} className="text-green-500 dark:text-green-400 shrink-0 mt-0.5" />
+                                    {t}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
