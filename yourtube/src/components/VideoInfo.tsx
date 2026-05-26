@@ -125,8 +125,7 @@ const VideoInfo = ({ video }: any) => {
       const res = await axiosInstance.post(`/user/download/${user._id}`);
       if (res.data.allowed) {
         // Trigger browser download
-        const backendUrl =
-          process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         const fileUrl = `${backendUrl}/${video.filepath}`;
         const link = document.createElement("a");
         link.href = fileUrl;

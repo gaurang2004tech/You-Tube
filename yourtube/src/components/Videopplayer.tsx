@@ -35,7 +35,8 @@ export default function VideoPlayer({ video, onNext, onShowComments }: VideoPlay
 
   const plan = user?.plan ?? "free";
   const limitSeconds = WATCH_LIMITS[plan] ?? 5 * 60;
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 
   // Reset overlay state when video changes
   useEffect(() => {

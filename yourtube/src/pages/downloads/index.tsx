@@ -26,8 +26,7 @@ const DownloadsPage = () => {
     }, []);
 
     const handleReDownload = (video: DownloadedVideo) => {
-        const backendUrl =
-            process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
         const fileUrl = `${backendUrl}/${video.filepath}`;
         const link = document.createElement("a");
         link.href = fileUrl;
