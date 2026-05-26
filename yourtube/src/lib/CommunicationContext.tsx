@@ -19,6 +19,10 @@ interface CommunicationContextType {
     isScreenSharing: boolean;
     isRecording: boolean;
     remoteIsSharing: boolean;
+    isAudioMuted: boolean;
+    isVideoMuted: boolean;
+    toggleAudio: () => void;
+    toggleVideo: () => void;
 }
 
 const CommunicationContext = createContext<CommunicationContextType | undefined>(undefined);
@@ -41,6 +45,8 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [remoteIsSharing, setRemoteIsSharing] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
+    const [isAudioMuted, setIsAudioMuted] = useState(false);
+    const [isVideoMuted, setIsVideoMuted] = useState(false);
 
     const peerConnection = useRef<RTCPeerConnection | null>(null);
     const targetUserId = useRef<string | null>(null);
@@ -191,6 +197,8 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
         setCallState("idle");
         setIsScreenSharing(false);
         setRemoteIsSharing(false);
+        setIsAudioMuted(false);
+        setIsVideoMuted(false);
         setIncomingCall(null);
         targetUserId.current = null;
         if (isRecording) stopRecording();
@@ -280,10 +288,29 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsRecording(false);
     };
 
+    const toggleAudio = () => {
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsAudioMuted(!isAudioMuted);
+        }
+    };
+
+    const toggleVideo = () => {
+        if (localStream) {
+            localStream.getVideoTracks().forEach(track => {
+                track.enabled = !track.enabled;
+            });
+            setIsVideoMuted(!isVideoMuted);
+        }
+    };
+
     return (
         <CommunicationContext.Provider value={{
             socket, callUser, answerCall, endCall, toggleScreenShare, startRecording, stopRecording,
-            callState, incomingCall, localStream, remoteStream, screenStream, isScreenSharing, isRecording, remoteIsSharing
+            callState, incomingCall, localStream, remoteStream, screenStream, isScreenSharing, isRecording, remoteIsSharing,
+            isAudioMuted, isVideoMuted, toggleAudio, toggleVideo
         }}>
             {children}
         </CommunicationContext.Provider>

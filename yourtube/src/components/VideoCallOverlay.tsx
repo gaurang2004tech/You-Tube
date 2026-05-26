@@ -7,7 +7,8 @@ const VideoCallOverlay = () => {
     const {
         callState, incomingCall, answerCall, endCall, toggleScreenShare,
         startRecording, stopRecording, isRecording, isScreenSharing,
-        localStream, remoteStream, screenStream, remoteIsSharing
+        localStream, remoteStream, screenStream, remoteIsSharing,
+        isAudioMuted, isVideoMuted, toggleAudio, toggleVideo
     } = useCommunication();
 
     const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -99,15 +100,17 @@ const VideoCallOverlay = () => {
                         <>
                             <Button
                                 variant="outline"
-                                className="rounded-full h-10 w-10 md:h-12 md:w-12 border-zinc-700 text-zinc-400 hover:bg-zinc-800"
+                                onClick={toggleAudio}
+                                className={`rounded-full h-10 w-10 md:h-12 md:w-12 transition-all ${isAudioMuted ? "bg-red-500/20 text-red-500 border-red-500/50 hover:bg-red-500/30" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800"}`}
                             >
-                                <Mic size={18} className="md:w-5 md:h-5" />
+                                {isAudioMuted ? <MicOff size={18} className="md:w-5 md:h-5" /> : <Mic size={18} className="md:w-5 md:h-5" />}
                             </Button>
                             <Button
                                 variant="outline"
-                                className="rounded-full h-10 w-10 md:h-12 md:w-12 border-zinc-700 text-zinc-400 hover:bg-zinc-800"
+                                onClick={toggleVideo}
+                                className={`rounded-full h-10 w-10 md:h-12 md:w-12 transition-all ${isVideoMuted ? "bg-red-500/20 text-red-500 border-red-500/50 hover:bg-red-500/30" : "border-zinc-700 text-zinc-300 hover:bg-zinc-800"}`}
                             >
-                                <Video size={18} className="md:w-5 md:h-5" />
+                                {isVideoMuted ? <VideoOff size={18} className="md:w-5 md:h-5" /> : <Video size={18} className="md:w-5 md:h-5" />}
                             </Button>
 
                             <div className="hidden md:block w-px h-8 bg-zinc-800 mx-2" />
