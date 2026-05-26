@@ -15,8 +15,13 @@ import historyrroutes from "./routes/history.js";
 import commentroutes from "./routes/comment.js";
 import paymentroutes from "./routes/payment.js";
 
+import fs from "fs";
+
 dotenv.config();
 const app = express();
+
+// Ensure uploads directory exists (Render filesystem is ephemeral)
+fs.mkdirSync("uploads", { recursive: true });
 
 // Global Logger for Debugging
 app.use((req, res, next) => {
