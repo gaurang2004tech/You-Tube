@@ -6,19 +6,25 @@ import type { AppProps } from "next/app";
 import { UserProvider } from "../lib/AuthContext";
 import { ThemeLocationProvider } from "@/lib/ThemeLocationContext";
 
+import { CommunicationProvider } from "../lib/CommunicationContext";
+import VideoCallOverlay from "@/components/VideoCallOverlay";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeLocationProvider>
       <UserProvider>
-        <div className="min-h-screen bg-white dark:bg-zinc-950 text-black dark:text-zinc-50 transition-colors duration-300">
-          <title>Your-Tube Clone</title>
-          <Header />
-          <Toaster />
-          <div className="flex">
-            <Sidebar />
-            <Component {...pageProps} />
+        <CommunicationProvider>
+          <div className="min-h-screen bg-white dark:bg-zinc-950 text-black dark:text-zinc-50 transition-colors duration-300">
+            <title>Your-Tube Clone</title>
+            <Header />
+            <Toaster />
+            <div className="flex">
+              <Sidebar />
+              <Component {...pageProps} />
+            </div>
+            <VideoCallOverlay />
           </div>
-        </div>
+        </CommunicationProvider>
       </UserProvider>
     </ThemeLocationProvider>
   );

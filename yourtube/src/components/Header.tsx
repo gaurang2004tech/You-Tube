@@ -1,4 +1,4 @@
-import { Bell, Menu, Mic, Search, User, VideoIcon } from "lucide-react";
+import { Bell, Menu, Mic, Search, User, VideoIcon, Phone } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -15,10 +15,12 @@ import Channeldialogue from "./channeldialogue";
 import { useRouter } from "next/router";
 import { useUser } from "@/lib/AuthContext";
 import AuthOtpModal from "./AuthOtpModal";
+import UsersList from "./UsersList";
 
 const Header = () => {
   const { user, logout } = useUser();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isUsersListOpen, setIsUsersListOpen] = useState(false);
   // const user: any = {
   //   id: "1",
   //   name: "John Doe",
@@ -82,6 +84,14 @@ const Header = () => {
       <div className="flex items-center gap-2">
         {user ? (
           <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={isUsersListOpen ? "text-blue-600 bg-blue-50 dark:bg-blue-500/10" : ""}
+              onClick={() => setIsUsersListOpen(!isUsersListOpen)}
+            >
+              <Phone className="w-6 h-6" />
+            </Button>
             <Button variant="ghost" size="icon">
               <VideoIcon className="w-6 h-6" />
             </Button>
@@ -152,7 +162,9 @@ const Header = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
+      {isUsersListOpen && <UsersList onClose={() => setIsUsersListOpen(false)} />}
     </header >
+
   );
 };
 

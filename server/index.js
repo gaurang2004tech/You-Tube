@@ -29,9 +29,55 @@ app.use("/history", historyrroutes);
 app.use("/comment", commentroutes);
 app.use("/payment", paymentroutes);
 const PORT = process.env.PORT || 5000;
+import { Server } from "socket.io";
 
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
+import http from "http";
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Adjust in production
+    methods: ["GET", "POST"],
+  },
+});
+
+const socketToUser = new Map();
+
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  socket.on("join-auth", (userId) => {
+    socket.join(userId);
+    socketToUser.set(socket.id, userId);
+    console.log(`User ${userId} joined signaling room`);
+  });
+
+  socket.on("call-user", ({ to, offer, fromName, fromId }) => {
+    console.log(`Incoming call from ${fromName} to ${to}`);
+    io.to(to).emit("incoming-call", { offer, fromName, fromId });
+  });
+
+  socket.on("answer-call", ({ to, answer }) => {
+    io.to(to).emit("call-answered", { answer });
+  });
+
+  socket.on("ice-candidate", ({ to, candidate }) => {
+    io.to(to).emit("ice-candidate", { candidate });
+  });
+
+  socket.on("end-call", ({ to }) => {
+    io.to(to).emit("call-ended");
+  });
+
+  socket.on("toggle-screen-share", ({ to, isSharing }) => {
+    io.to(to).emit("screen-share-toggled", { isSharing });
+  });
+
+  socket.on("disconnect", () => {
+    const userId = socketToUser.get(socket.id);
+    socketToUser.delete(socket.id);
+    console.log(`User disconnected: ${socket.id} (${userId})`);
+  });
 });
 
 const DBURL = process.env.DB_URL;
@@ -39,6 +85,9 @@ mongoose
   .connect(DBURL)
   .then(() => {
     console.log("Mongodb connected");
+    server.listen(PORT, () => {
+      console.log(`server running on port ${PORT}`);
+    });
   })
   .catch((error) => {
     console.log(error);

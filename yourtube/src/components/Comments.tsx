@@ -442,7 +442,7 @@ const Comments = ({ videoId }: { videoId: string }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div id="comments-section" className="space-y-6">
       <h2 className="text-xl font-semibold">{comments.length} Comments</h2>
 
       {/* ── New Comment Input ─────────────────────────────────────────────── */}
