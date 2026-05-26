@@ -170,20 +170,23 @@ const VideoInfo = ({ video }: any) => {
   return (
     <>
       <div className="space-y-4 text-black dark:text-white">
-        <h1 className="text-xl font-semibold dark:text-zinc-50">{video.videotitle}</h1>
+        <h1 className="text-base md:text-xl font-semibold dark:text-zinc-50 leading-snug">{video.videotitle}</h1>
 
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-10 h-10">
+        {/* Channel + actions row — wraps cleanly on mobile */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Avatar className="w-9 h-9 md:w-10 md:h-10">
               <AvatarFallback>{video.videochanel[0]}</AvatarFallback>
             </Avatar>
-            <div>
-              <h3 className="font-medium dark:text-zinc-100">{video.videochanel}</h3>
-              <p className="text-sm text-gray-600 dark:text-zinc-400">1.2M subscribers</p>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-medium text-sm md:text-base dark:text-zinc-100 truncate">{video.videochanel}</h3>
+              <p className="text-xs text-gray-600 dark:text-zinc-400">1.2M subscribers</p>
             </div>
-            <Button className="ml-4 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200">Subscribe</Button>
+            <Button size="sm" className="dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200 text-sm">Subscribe</Button>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+
+          {/* Scrollable action buttons on mobile */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide -mx-1 px-1">
             <div className="flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full">
               <Button
                 variant="ghost"

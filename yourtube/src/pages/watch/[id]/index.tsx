@@ -85,9 +85,11 @@ const index = () => {
   }
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
+      <div className="max-w-7xl mx-auto p-2 md:p-4">
+        {/* Mobile: stack vertically. Desktop: side-by-side grid */}
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6">
+          {/* Left column: player + info + comments */}
+          <div className="lg:col-span-2 space-y-3 md:space-y-4">
             <Videopplayer
               video={videos}
               onNext={handleNextVideo}
@@ -96,6 +98,7 @@ const index = () => {
             <VideoInfo video={videos} />
             <Comments videoId={id as string} />
           </div>
+          {/* Right column: related videos (shows below on mobile) */}
           <div className="space-y-4">
             <RelatedVideos videos={video} />
           </div>
