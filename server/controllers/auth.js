@@ -101,20 +101,23 @@ export const sendOtp = async (req, res) => {
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
   const expiresAt = Date.now() + 5 * 60 * 1000; // 5 mins
 
+  console.log(`Attempting to send OTP to: ${identifier} (type: ${type})`);
   otpStore.set(identifier, { otp, expiresAt });
 
   if (type === "email") {
     try {
       const transporter = getTransporter();
+      console.log("Transporter created, sending mail...");
       await transporter.sendMail({
         from: `"YourTube Auth" <${process.env.NODEMAILER_USER}>`,
         to: identifier,
         subject: "Your YourTube Login OTP",
         html: `<h2>Your OTP is: ${otp}</h2><p>It expires in 5 minutes.</p>`,
       });
+      console.log(`OTP sent successfully to ${identifier}`);
       return res.status(200).json({ message: "Email OTP sent successfully" });
     } catch (err) {
-      console.error("Email send failed:", err);
+      console.error("CRITICAL: Email send failed:", err);
       return res.status(500).json({ message: "Failed to send email OTP" });
     }
   } else if (type === "mobile") {
