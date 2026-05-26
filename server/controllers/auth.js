@@ -10,16 +10,16 @@ const otpStore = new Map();
 const getTransporter = () =>
   nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // upgrade later with STARTTLS
+    port: 465,
+    secure: true, // Port 465 is secure
     auth: {
       user: process.env.NODEMAILER_USER,
       pass: process.env.NODEMAILER_PASS,
     },
     // Force IPv4 because Render IPv6 route is often unreachable
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
     dnsLookup: (hostname, options, callback) => {
       require('dns').lookup(hostname, { family: 4 }, callback);
     }
