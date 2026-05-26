@@ -34,11 +34,20 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
 
         setSending(true);
         try {
-            await axiosInstance.post("/user/send-otp", {
+            const { data } = await axiosInstance.post("/user/send-otp", {
                 identifier,
                 type: authType,
             });
-            toast.success(`OTP sent to your ${authType}`);
+
+            // If email delivery failed, show OTP directly on screen
+            if (data?.fallbackOtp) {
+                toast.info(`📧 Email unavailable. Your OTP: ${data.fallbackOtp}`, {
+                    duration: 60000, // Show for 60 seconds so they have time to copy it
+                    description: "Copy this code and paste it in the OTP field below.",
+                });
+            } else {
+                toast.success(`OTP sent to your ${authType}`);
+            }
             setStep("verify");
         } catch (error: any) {
             toast.error(error.response?.data?.message || "Failed to send OTP");

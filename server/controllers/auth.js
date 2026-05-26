@@ -98,12 +98,8 @@ export const sendOtp = async (req, res) => {
   otpStore.set(identifier, { otp, expiresAt });
 
   if (type === "email") {
-    // Always log OTP for fallback access via Render logs
-    console.log(`\n==================================`);
     console.log(`📧 OTP for ${identifier}: ${otp}`);
-    console.log(`==================================\n`);
     try {
-      console.log("Sending via Resend API...");
       const { data, error } = await resend.emails.send({
         from: "YourTube Auth <onboarding@resend.dev>",
         to: [identifier],
@@ -111,15 +107,20 @@ export const sendOtp = async (req, res) => {
         html: `<h2>Your OTP is: ${otp}</h2><p>It expires in 5 minutes.</p>`,
       });
       if (error) {
-        console.error("Resend API error (OTP still valid, check logs):", error.message);
-        // Don't fail — OTP is saved in memory, user can get it from logs
-        return res.status(200).json({ message: "OTP generated. Check Render logs if email not received." });
+        // Email failed — return OTP in response so UI can show it
+        console.log("Email failed, returning OTP in response for testing.");
+        return res.status(200).json({
+          message: "Email delivery unavailable. Your OTP is shown below.",
+          fallbackOtp: otp,
+        });
       }
-      console.log(`OTP sent successfully via Resend to ${identifier}`);
       return res.status(200).json({ message: "Email OTP sent successfully" });
     } catch (err) {
-      console.error("Email send error (OTP still valid, check logs):", err.message);
-      return res.status(200).json({ message: "OTP generated. Check Render logs if email not received." });
+      console.error("Email send error:", err.message);
+      return res.status(200).json({
+        message: "Email delivery unavailable. Your OTP is shown below.",
+        fallbackOtp: otp,
+      });
     }
   } else if (type === "mobile") {
     // Mock Mobile SMS
