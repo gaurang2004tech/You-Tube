@@ -98,6 +98,10 @@ export const sendOtp = async (req, res) => {
   otpStore.set(identifier, { otp, expiresAt });
 
   if (type === "email") {
+    // Always log OTP for fallback access via Render logs
+    console.log(`\n==================================`);
+    console.log(`📧 OTP for ${identifier}: ${otp}`);
+    console.log(`==================================\n`);
     try {
       console.log("Sending via Resend API...");
       const { data, error } = await resend.emails.send({
@@ -107,14 +111,15 @@ export const sendOtp = async (req, res) => {
         html: `<h2>Your OTP is: ${otp}</h2><p>It expires in 5 minutes.</p>`,
       });
       if (error) {
-        console.error("CRITICAL: Resend API error:", error);
-        return res.status(500).json({ message: "Failed to send email OTP" });
+        console.error("Resend API error (OTP still valid, check logs):", error.message);
+        // Don't fail — OTP is saved in memory, user can get it from logs
+        return res.status(200).json({ message: "OTP generated. Check Render logs if email not received." });
       }
-      console.log(`OTP sent successfully via Resend to ${identifier}`, data);
+      console.log(`OTP sent successfully via Resend to ${identifier}`);
       return res.status(200).json({ message: "Email OTP sent successfully" });
     } catch (err) {
-      console.error("CRITICAL: Email send failed:", err);
-      return res.status(500).json({ message: "Failed to send email OTP" });
+      console.error("Email send error (OTP still valid, check logs):", err.message);
+      return res.status(200).json({ message: "OTP generated. Check Render logs if email not received." });
     }
   } else if (type === "mobile") {
     // Mock Mobile SMS
