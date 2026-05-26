@@ -24,9 +24,9 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
 
     if (!isOpen) return null;
 
-    const authType = isSouthIndia ? "email" : "mobile";
-    const placeholder = isSouthIndia ? "Email address" : "Mobile number";
-    const Icon = isSouthIndia ? Mail : Phone;
+    const authType = "email";
+    const placeholder = "Email address";
+    const Icon = Mail;
 
     const handleSendOtp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -93,9 +93,7 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
                     <p className="text-sm text-center text-gray-500 mb-8">
                         {isLoading
                             ? "Checking region..."
-                            : isSouthIndia
-                                ? "South India Region: Please verify your Email"
-                                : "Standard Region: Please verify your Mobile Number"}
+                            : "Please verify your Email address to continue"}
                     </p>
 
                     {step === "input" ? (
@@ -105,7 +103,7 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
                                     <Icon size={18} />
                                 </span>
                                 <Input
-                                    type={isSouthIndia ? "email" : "tel"}
+                                    type="email"
                                     placeholder={placeholder}
                                     value={identifier}
                                     onChange={(e) => setIdentifier(e.target.value)}
@@ -151,7 +149,7 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
                                 onClick={() => setStep("input")}
                                 className="w-full text-xs text-center text-gray-500 hover:text-gray-700 mt-4"
                             >
-                                Use a different {isSouthIndia ? "email" : "mobile number"}
+                                Use a different email address
                             </button>
                         </form>
                     )}
