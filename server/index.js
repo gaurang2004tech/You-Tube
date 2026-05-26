@@ -17,6 +17,13 @@ import paymentroutes from "./routes/payment.js";
 
 dotenv.config();
 const app = express();
+
+// Global Logger for Debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 app.use(cors());
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
