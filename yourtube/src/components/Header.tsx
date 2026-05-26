@@ -116,7 +116,7 @@ const Header = () => {
             <Button
               variant="ghost"
               size="icon"
-              className={`hidden md:flex ${isUsersListOpen ? "text-blue-600 bg-blue-50 dark:bg-blue-500/10" : ""}`}
+              className={isUsersListOpen ? "text-blue-600 bg-blue-50 dark:bg-blue-500/10" : ""}
               onClick={() => setIsUsersListOpen(!isUsersListOpen)}
             >
               <Phone className="w-5 h-5" />
