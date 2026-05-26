@@ -289,21 +289,27 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const toggleAudio = () => {
-        if (localStream) {
-            localStream.getAudioTracks().forEach(track => {
-                track.enabled = !track.enabled;
-            });
-            setIsAudioMuted(!isAudioMuted);
-        }
+        setIsAudioMuted(prev => {
+            const nextState = !prev;
+            if (localStream) {
+                localStream.getAudioTracks().forEach(track => {
+                    track.enabled = !nextState;
+                });
+            }
+            return nextState;
+        });
     };
 
     const toggleVideo = () => {
-        if (localStream) {
-            localStream.getVideoTracks().forEach(track => {
-                track.enabled = !track.enabled;
-            });
-            setIsVideoMuted(!isVideoMuted);
-        }
+        setIsVideoMuted(prev => {
+            const nextState = !prev;
+            if (localStream) {
+                localStream.getVideoTracks().forEach(track => {
+                    track.enabled = !nextState;
+                });
+            }
+            return nextState;
+        });
     };
 
     return (

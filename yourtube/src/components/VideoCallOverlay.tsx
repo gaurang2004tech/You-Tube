@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef } from "react";
 import { useCommunication } from "@/lib/CommunicationContext";
 import { Phone, PhoneOff, Monitor, Radio, Mic, MicOff, Video, VideoOff, Download } from "lucide-react";
