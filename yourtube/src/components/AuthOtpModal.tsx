@@ -41,9 +41,10 @@ export default function AuthOtpModal({ isOpen, onClose }: AuthOtpModalProps) {
 
             // If email delivery failed, show OTP directly on screen
             if (data?.fallbackOtp) {
-                toast.info(`📧 Email unavailable. Your OTP: ${data.fallbackOtp}`, {
-                    duration: 60000, // Show for 60 seconds so they have time to copy it
+                toast.info(`📧 Your OTP: ${data.fallbackOtp}`, {
+                    duration: 120000,
                     description: "Copy this code and paste it in the OTP field below.",
+                    closeButton: true,
                 });
             } else {
                 toast.success(`OTP sent to your ${authType}`);

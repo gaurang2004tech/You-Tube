@@ -123,11 +123,11 @@ export const sendOtp = async (req, res) => {
       });
     }
   } else if (type === "mobile") {
-    // Mock Mobile SMS
-    console.log(`\n========================================`);
     console.log(`📱 MOCK SMS OTP for ${identifier}: ${otp}`);
-    console.log(`========================================\n`);
-    return res.status(200).json({ message: "Mobile OTP sent successfully (check console)" });
+    return res.status(200).json({
+      message: "SMS unavailable. Your OTP is shown on screen.",
+      fallbackOtp: otp,
+    });
   } else {
     return res.status(400).json({ message: "Invalid type" });
   }
