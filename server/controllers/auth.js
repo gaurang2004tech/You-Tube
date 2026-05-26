@@ -16,6 +16,13 @@ const getTransporter = () =>
       user: process.env.NODEMAILER_USER,
       pass: process.env.NODEMAILER_PASS,
     },
+    // Force IPv4 because Render IPv6 route is often unreachable
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
+    dnsLookup: (hostname, options, callback) => {
+      require('dns').lookup(hostname, { family: 4 }, callback);
+    }
   });
 
 export const login = async (req, res) => {
