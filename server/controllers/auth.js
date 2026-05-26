@@ -1,29 +1,13 @@
 import mongoose from "mongoose";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import users from "../Modals/Auth.js";
 
 // OTP Store Map (in-memory)
 // Format: { "email_or_mobile": { otp: "1234", expiresAt: Number } }
 const otpStore = new Map();
 
-// Nodemailer setup
-const getTransporter = () =>
-  nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Port 465 is secure
-    auth: {
-      user: process.env.NODEMAILER_USER,
-      pass: process.env.NODEMAILER_PASS,
-    },
-    // Force IPv4 because Render IPv6 route is often unreachable
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 15000,
-    dnsLookup: (hostname, options, callback) => {
-      require('dns').lookup(hostname, { family: 4 }, callback);
-    }
-  });
+// Resend email client (uses HTTPS - no SMTP port issues on Render)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const login = async (req, res) => {
   const { email, name, image } = req.body;
@@ -115,15 +99,18 @@ export const sendOtp = async (req, res) => {
 
   if (type === "email") {
     try {
-      const transporter = getTransporter();
-      console.log("Transporter created, sending mail...");
-      await transporter.sendMail({
-        from: `"YourTube Auth" <${process.env.NODEMAILER_USER}>`,
-        to: identifier,
+      console.log("Sending via Resend API...");
+      const { data, error } = await resend.emails.send({
+        from: "YourTube Auth <onboarding@resend.dev>",
+        to: [identifier],
         subject: "Your YourTube Login OTP",
         html: `<h2>Your OTP is: ${otp}</h2><p>It expires in 5 minutes.</p>`,
       });
-      console.log(`OTP sent successfully to ${identifier}`);
+      if (error) {
+        console.error("CRITICAL: Resend API error:", error);
+        return res.status(500).json({ message: "Failed to send email OTP" });
+      }
+      console.log(`OTP sent successfully via Resend to ${identifier}`, data);
       return res.status(200).json({ message: "Email OTP sent successfully" });
     } catch (err) {
       console.error("CRITICAL: Email send failed:", err);
