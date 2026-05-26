@@ -150,7 +150,7 @@ export default function VideoPlayer({ video, onNext, onShowComments }: VideoPlay
         onTimeUpdate={handleTimeUpdate}
       >
         <source
-          src={`${backendUrl}/${video?.filepath}`}
+          src={`${backendUrl}/${video?.filepath?.replace(/\\/g, "/")}`}
           type="video/mp4"
         />
         Your browser does not support the video tag.
