@@ -25,6 +25,8 @@ const UsersList = ({ onClose }: { onClose: () => void }) => {
         const fetchUsers = async () => {
             try {
                 const res = await axiosInstance.get("/user/all");
+                console.log("Fetched users:", res.data);
+                console.log("Current user ID:", currentUser?._id);
                 setUsers(res.data.filter((u: User) => u._id !== currentUser?._id));
             } catch (err) {
                 console.error(err);

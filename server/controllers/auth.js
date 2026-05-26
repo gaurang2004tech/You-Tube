@@ -183,7 +183,7 @@ export const verifyOtp = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const allUsers = await users.find({}, { name: 1, email: 1, image: 1, channelname: 1 });
+    const allUsers = await users.find({});
     return res.status(200).json(allUsers);
   } catch (error) {
     console.error(error);

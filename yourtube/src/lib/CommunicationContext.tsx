@@ -114,43 +114,65 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const callUser = async (userId: string) => {
-        targetUserId.current = userId;
-        setCallState("calling");
+        try {
+            targetUserId.current = userId;
+            setCallState("calling");
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setLocalStream(stream);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setLocalStream(stream);
 
-        const pc = createPeerConnection(userId);
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+            const pc = createPeerConnection(userId);
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
 
-        socket?.emit("call-user", {
-            to: userId,
-            offer,
-            fromName: user?.name || user?.email,
-            fromId: user?._id
-        });
+            socket?.emit("call-user", {
+                to: userId,
+                offer,
+                fromName: user?.name || user?.email,
+                fromId: user?._id
+            });
+        } catch (err: any) {
+            console.error("Call failed:", err);
+            setCallState("idle");
+            if (err.name === "NotReadableError") {
+                toast.error("Camera/Mic in use by another application. Please close other apps and try again.");
+            } else if (err.name === "NotAllowedError") {
+                toast.error("Permission denied. Please allow camera and mic access.");
+            } else {
+                toast.error("Failed to start media. Please check your devices.");
+            }
+        }
     };
 
     const answerCall = async () => {
         if (!incomingCall) return;
-        targetUserId.current = incomingCall.fromId;
+        try {
+            targetUserId.current = incomingCall.fromId;
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setLocalStream(stream);
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setLocalStream(stream);
 
-        const pc = createPeerConnection(incomingCall.fromId);
-        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+            const pc = createPeerConnection(incomingCall.fromId);
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
-        await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.offer));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
+            await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
 
-        socket?.emit("answer-call", { to: incomingCall.fromId, answer });
-        setCallState("connected");
-        setIncomingCall(null);
+            socket?.emit("answer-call", { to: incomingCall.fromId, answer });
+            setCallState("connected");
+            setIncomingCall(null);
+        } catch (err: any) {
+            console.error("Answer failed:", err);
+            endCall();
+            if (err.name === "NotReadableError") {
+                toast.error("Camera/Mic in use. Please close other apps.");
+            } else {
+                toast.error("Failed to access camera/mic.");
+            }
+        }
     };
 
     const endCall = () => {
