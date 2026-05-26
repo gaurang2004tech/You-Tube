@@ -82,14 +82,19 @@ io.on("connection", (socket) => {
 });
 
 const DBURL = process.env.DB_URL;
-mongoose
-  .connect(DBURL)
-  .then(() => {
-    console.log("Mongodb connected");
-    server.listen(PORT, () => {
-      console.log(`server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  if (!DBURL) {
+    console.error("WARNING: DB_URL environment variable is not defined!");
+  } else {
+    mongoose
+      .connect(DBURL)
+      .then(() => {
+        console.log("Mongodb connected");
+      })
+      .catch((error) => {
+        console.error("Mongodb connection error:", error);
+      });
+  }
+});
