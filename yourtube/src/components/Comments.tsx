@@ -251,12 +251,12 @@ const Comments = ({ videoId }: { videoId: string }) => {
 
   // ── Fetch user city once ──────────────────────────────────────────────────
   useEffect(() => {
-    fetch("http://ip-api.com/json?fields=city")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.city) setUserCity(d.city);
+    fetch("https://ipapi.co/json/")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.city) setUserCity(data.city);
       })
-      .catch(() => { });
+      .catch((err) => console.log("Failed to fetch location", err));
   }, []);
 
   // ── Load comments ─────────────────────────────────────────────────────────
