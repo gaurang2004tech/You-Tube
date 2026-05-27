@@ -1,9 +1,6 @@
-"use clinet";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-
-const videos = "/video/vdo.mp4";
 export default function VideoCard({ video }: any) {
   return (
     <Link href={`/watch/${video?._id}`} className="group">
@@ -27,7 +24,7 @@ export default function VideoCard({ video }: any) {
             </h3>
             <p className="text-sm text-gray-600 dark:text-zinc-400 mt-1">{video?.videochanel}</p>
             <p className="text-sm text-gray-600 dark:text-zinc-500">
-              {video?.views.toLocaleString()} views •{" "}
+              {(video?.views ?? 0).toLocaleString()} views •{" "}
               {formatDistanceToNow(new Date(video?.createdAt))} ago
             </p>
           </div>

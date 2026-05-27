@@ -3,7 +3,6 @@ import RelatedVideos from "@/components/RelatedVideos";
 import VideoInfo from "@/components/VideoInfo";
 import Videopplayer from "@/components/Videopplayer";
 import axiosInstance from "@/lib/axiosinstance";
-import { notFound } from "next/navigation";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 

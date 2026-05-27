@@ -120,10 +120,10 @@ export const verifyPayment = async (req, res) => {
 
     try {
         // Verify HMAC signature
-        const body = razorpay_order_id + "|" + razorpay_payment_id;
+        const hmacBody = razorpay_order_id + "|" + razorpay_payment_id;
         const expectedSignature = crypto
             .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(body.toString())
+            .update(hmacBody)
             .digest("hex");
 
         if (expectedSignature !== razorpay_signature) {

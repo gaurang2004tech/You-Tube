@@ -93,10 +93,10 @@ const VideoInfo = ({ video }: any) => {
   const handleDislike = async () => {
     if (!user) return;
     try {
-      const res = await axiosInstance.post(`/like/${video._id}`, {
+      const res = await axiosInstance.post(`/dislike/${video._id}`, {
         userId: user?._id,
       });
-      if (!res.data.liked) {
+      if (res.data) {
         if (isDisliked) {
           setDislikes((prev: any) => prev - 1);
           setIsDisliked(false);
@@ -268,7 +268,7 @@ const VideoInfo = ({ video }: any) => {
         </div>
         <div className="bg-gray-100 dark:bg-zinc-900 rounded-lg p-4 transition-colors">
           <div className="flex gap-4 text-sm font-medium mb-2 dark:text-zinc-100">
-            <span>{video.views.toLocaleString()} views</span>
+            <span>{(video.views ?? 0).toLocaleString()} views</span>
             <span>{formatDistanceToNow(new Date(video.createdAt))} ago</span>
           </div>
           <div className={`text-sm ${showFullDescription ? "" : "line-clamp-3"} dark:text-zinc-300`}>

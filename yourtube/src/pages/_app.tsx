@@ -17,9 +17,9 @@ const BottomNav = () => (
       <Home className="w-5 h-5" />
       <span>Home</span>
     </Link>
-    <Link href="/explore" className="flex flex-col items-center flex-1 text-xs gap-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
+    <Link href="/search" className="flex flex-col items-center flex-1 text-xs gap-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
       <Compass className="w-5 h-5" />
-      <span>Explore</span>
+      <span>Search</span>
     </Link>
     <Link href="/history" className="flex flex-col items-center flex-1 text-xs gap-1 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500 transition-colors">
       <History className="w-5 h-5" />

@@ -151,7 +151,7 @@ const VideoCallOverlay = () => {
                 </div>
             </div>
 
-            <style jsx>{`
+            <style>{`
                 .mirror {
                     transform: scaleX(-1);
                 }
