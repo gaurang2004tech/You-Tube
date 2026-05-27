@@ -25,7 +25,7 @@ const VideoCallOverlay = () => {
         if (remoteVideoRef.current && remoteStream) {
             remoteVideoRef.current.srcObject = remoteStream;
         }
-    }, [remoteStream]);
+    }, [remoteStream, callState]);
 
     if (callState === "idle") return null;
 

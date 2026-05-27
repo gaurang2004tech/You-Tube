@@ -52,13 +52,21 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     const targetUserId = useRef<string | null>(null);
     const mediaRecorder = useRef<MediaRecorder | null>(null);
     const recordedChunks = useRef<Blob[]>([]);
+    const socketRef = useRef<Socket | null>(null);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     useEffect(() => {
+        if (socket) {
+            socketRef.current = socket;
+        }
+    }, [socket]);
+
+    useEffect(() => {
         if (!user) return;
 
-        const newSocket = io(backendUrl);
+        const newSocket = io(backendUrl as string);
+        socketRef.current = newSocket;
         setSocket(newSocket);
 
         newSocket.on("connect", () => {
@@ -107,7 +115,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
 
         pc.onicecandidate = (event) => {
             if (event.candidate) {
-                socket?.emit("ice-candidate", { to: targetId, candidate: event.candidate });
+                socketRef.current?.emit("ice-candidate", { to: targetId, candidate: event.candidate });
             }
         };
 
@@ -221,7 +229,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
                         stopScreenShare();
                     };
                 }
-                socket?.emit("toggle-screen-share", { to: targetUserId.current, isSharing: true });
+                socketRef.current?.emit("toggle-screen-share", { to: targetUserId.current, isSharing: true });
             } catch (err) {
                 console.error(err);
             }
@@ -241,7 +249,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
             const sender = peerConnection.current.getSenders().find(s => s.track?.kind === "video");
             if (sender) sender.replaceTrack(cameraTrack);
         }
-        socket?.emit("toggle-screen-share", { to: targetUserId.current, isSharing: false });
+        socketRef.current?.emit("toggle-screen-share", { to: targetUserId.current, isSharing: false });
     };
 
     const startRecording = () => {
