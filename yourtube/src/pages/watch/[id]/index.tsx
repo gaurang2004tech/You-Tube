@@ -10,17 +10,18 @@ import React, { useEffect, useMemo, useState } from "react";
 const index = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [videos, setvideo] = useState<any>(null);
-  const [video, setvide] = useState<any>(null);
+  const [currentVideo, setCurrentVideo] = useState<any>(null);
+  const [allVideos, setAllVideos] = useState<any[]>([]);
   const [loading, setloading] = useState(true);
   useEffect(() => {
     const fetchvideo = async () => {
       if (!id || typeof id !== "string") return;
       try {
         const res = await axiosInstance.get("/video/getall");
-        const video = res.data?.filter((vid: any) => vid._id === id);
-        setvideo(video[0]);
-        setvide(res.data);
+        const all = res.data ?? [];
+        const found = all.find((vid: any) => vid._id === id);
+        setCurrentVideo(found ?? null);
+        setAllVideos(all);
       } catch (error) {
         console.log(error);
       } finally {
@@ -31,14 +32,14 @@ const index = () => {
   }, [id]);
 
   const handleNextVideo = () => {
-    if (!video || !videos) return;
-    const currentIndex = video.findIndex((v: any) => v._id === videos._id);
-    if (currentIndex !== -1 && currentIndex < video.length - 1) {
-      const nextId = video[currentIndex + 1]._id;
+    if (!currentVideo || allVideos.length === 0) return;
+    const currentIndex = allVideos.findIndex((v: any) => v._id === currentVideo._id);
+    if (currentIndex !== -1 && currentIndex < allVideos.length - 1) {
+      const nextId = allVideos[currentIndex + 1]._id;
       router.push(`/watch/${nextId}`);
-    } else if (video.length > 0) {
+    } else if (allVideos.length > 0) {
       // Loop back to first video if at end
-      router.push(`/watch/${video[0]._id}`);
+      router.push(`/watch/${allVideos[0]._id}`);
     }
   };
 
@@ -80,7 +81,7 @@ const index = () => {
     return <div>Loading..</div>;
   }
 
-  if (!videos) {
+  if (!currentVideo) {
     return <div>Video not found</div>;
   }
   return (
@@ -91,16 +92,16 @@ const index = () => {
           {/* Left column: player + info + comments */}
           <div className="lg:col-span-2 space-y-3 md:space-y-4">
             <Videopplayer
-              video={videos}
+              video={currentVideo}
               onNext={handleNextVideo}
               onShowComments={scrollToComments}
             />
-            <VideoInfo video={videos} />
+            <VideoInfo video={currentVideo} />
             <Comments videoId={id as string} />
           </div>
           {/* Right column: related videos (shows below on mobile) */}
           <div className="space-y-4">
-            <RelatedVideos videos={video} />
+            <RelatedVideos videos={allVideos} />
           </div>
         </div>
       </div>
