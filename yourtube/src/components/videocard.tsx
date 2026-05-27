@@ -7,7 +7,7 @@ export default function VideoCard({ video }: any) {
       <div className="space-y-3">
         <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-zinc-800">
           <video
-            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${video?.filepath?.replace(/\\/g, "/")}`}
+            src={video?.filepath?.startsWith("http") ? video.filepath : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${video?.filepath?.replace(/\\/g, "/")}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             muted
             preload="none"
