@@ -26,8 +26,10 @@ export default function RelatedVideos({ videos }: RelatedVideosProps) {
           <Link key={video._id} href={`/watch/${video._id}`} className="flex-shrink-0 w-48 group">
             <div className="relative aspect-video bg-gray-100 dark:bg-zinc-800 rounded-lg overflow-hidden mb-2">
               <video
-                src={video.filepath?.startsWith("http") ? video.filepath : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${video.filepath?.replace(/\\/g, "/")}`}
+                src={(video.filepath?.startsWith("http") ? video.filepath : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${video.filepath?.replace(/\\/g, "/")}`) + "#t=0.001"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                muted
+                preload="metadata"
               />
             </div>
             <h3 className="font-medium text-xs line-clamp-2 dark:text-zinc-100">{video.videotitle}</h3>
@@ -42,8 +44,10 @@ export default function RelatedVideos({ videos }: RelatedVideosProps) {
           <Link key={video._id} href={`/watch/${video._id}`} className="flex gap-2 group">
             <div className="relative w-40 aspect-video bg-gray-100 dark:bg-zinc-800 rounded overflow-hidden flex-shrink-0">
               <video
-                src={video.filepath?.startsWith("http") ? video.filepath : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${video.filepath?.replace(/\\/g, "/")}`}
+                src={(video.filepath?.startsWith("http") ? video.filepath : `${process.env.NEXT_PUBLIC_BACKEND_URL}/${video.filepath?.replace(/\\/g, "/")}`) + "#t=0.001"}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                muted
+                preload="metadata"
               />
             </div>
             <div className="flex-1 min-w-0">
