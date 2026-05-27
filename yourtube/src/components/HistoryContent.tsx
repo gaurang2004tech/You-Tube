@@ -90,7 +90,9 @@ export default function HistoryContent() {
               <div className="relative w-40 aspect-video bg-gray-100 rounded overflow-hidden">
                 <video
                   src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/${item.videoid?.filepath?.replace(/\\/g, "/")}`}
-                  className="object-cover group-hover:scale-105 transition-transform duration-200"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  muted
+                  preload="none"
                 />
               </div>
             </Link>
