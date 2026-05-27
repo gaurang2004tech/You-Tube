@@ -12,18 +12,15 @@ const VideoCallOverlay = () => {
         isAudioMuted, isVideoMuted, toggleAudio, toggleVideo
     } = useCommunication();
 
-    const localVideoRef = useRef<HTMLVideoElement>(null);
-    const remoteVideoRef = useRef<HTMLVideoElement>(null);
-
-    useEffect(() => {
-        if (localVideoRef.current && localStream) {
-            localVideoRef.current.srcObject = localStream;
+    const localVideoRef = React.useCallback((node: HTMLVideoElement | null) => {
+        if (node && localStream) {
+            node.srcObject = localStream;
         }
     }, [localStream]);
 
-    useEffect(() => {
-        if (remoteVideoRef.current && remoteStream) {
-            remoteVideoRef.current.srcObject = remoteStream;
+    const remoteVideoRef = React.useCallback((node: HTMLVideoElement | null) => {
+        if (node && remoteStream) {
+            node.srcObject = remoteStream;
         }
     }, [remoteStream, callState]);
 
