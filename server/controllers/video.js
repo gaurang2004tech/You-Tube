@@ -36,3 +36,14 @@ export const getallvideo = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getVideosByUploader = async (req, res) => {
+  const { uploaderId } = req.params;
+  try {
+    const files = await video.find({ uploader: uploaderId });
+    return res.status(200).json(files);
+  } catch (error) {
+    console.error(" error:", error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
