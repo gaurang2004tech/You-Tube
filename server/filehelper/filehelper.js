@@ -17,7 +17,6 @@ const storage = new CloudinaryStorage({
   params: {
     folder: "youtube_clone",
     resource_type: "video",
-    allowed_formats: ["mp4", "mov", "webm", "avi", "mkv", "3gp"],
     // Optional: add a unique identifier if needed, though Cloudinary does this by default
   },
 });
