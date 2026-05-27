@@ -75,9 +75,10 @@ const VideoUploader = ({ channelId, channelName }: any) => {
       });
       toast.success("Upload successfully");
       resetForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading video:", error);
-      toast.error("There was an error uploading your video. Please try again.");
+      const msg = error?.response?.data?.message || "There was an error uploading your video. Please try again.";
+      toast.error(msg);
     } finally {
       setIsUploading(false);
     }

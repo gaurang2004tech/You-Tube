@@ -45,6 +45,18 @@ app.use("/history", historyrroutes);
 app.use("/comment", commentroutes);
 app.use("/payment", paymentroutes);
 
+// Global Multer Error Handler
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({ message: "File is too large. Maximum allowed size is 200MB." });
+  }
+  if (err.message && err.message.startsWith("Unsupported file type")) {
+    return res.status(400).json({ message: err.message });
+  }
+  console.error("Unhandled error:", err);
+  return res.status(500).json({ message: "Something went wrong." });
+});
+
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 const io = new Server(server, {
