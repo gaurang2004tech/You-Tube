@@ -53,6 +53,8 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     const mediaRecorder = useRef<MediaRecorder | null>(null);
     const recordedChunks = useRef<Blob[]>([]);
     const socketRef = useRef<Socket | null>(null);
+    // Queue ICE candidates that arrive before remote description is set
+    const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -79,16 +81,31 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
         });
 
         newSocket.on("call-answered", async ({ answer }) => {
-            if (peerConnection.current) {
-                await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+            const pc = peerConnection.current;
+            if (pc) {
+                await pc.setRemoteDescription(new RTCSessionDescription(answer));
+                // Drain any ICE candidates that arrived before remote description
+                for (const candidate of pendingCandidates.current) {
+                    try {
+                        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                    } catch (e) {
+                        console.error("Error adding queued ice candidate", e);
+                    }
+                }
+                pendingCandidates.current = [];
                 setCallState("connected");
             }
         });
 
         newSocket.on("ice-candidate", async ({ candidate }) => {
-            if (peerConnection.current) {
+            const pc = peerConnection.current;
+            if (!pc) return;
+            // If remote description not set yet, queue the candidate
+            if (!pc.remoteDescription) {
+                pendingCandidates.current.push(candidate);
+            } else {
                 try {
-                    await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
                 } catch (e) {
                     console.error("Error adding ice candidate", e);
                 }
@@ -179,6 +196,16 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
             stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
             await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.offer));
+            // Drain any ICE candidates that arrived before remote description
+            for (const candidate of pendingCandidates.current) {
+                try {
+                    await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (e) {
+                    console.error("Error adding queued ice candidate", e);
+                }
+            }
+            pendingCandidates.current = [];
+
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
 
@@ -204,6 +231,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
     const cleanupCall = () => {
         peerConnection.current?.close();
         peerConnection.current = null;
+        pendingCandidates.current = []; // clear queue on cleanup
         localStream?.getTracks().forEach(t => t.stop());
         screenStream?.getTracks().forEach(t => t.stop());
         setLocalStream(null);
