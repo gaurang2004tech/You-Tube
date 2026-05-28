@@ -148,7 +148,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
 
-            socket?.emit("call-user", {
+            socketRef.current?.emit("call-user", {
                 to: userId,
                 offer,
                 fromName: user?.name || user?.email,
@@ -182,7 +182,7 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
 
-            socket?.emit("answer-call", { to: incomingCall.fromId, answer });
+            socketRef.current?.emit("answer-call", { to: incomingCall.fromId, answer });
             setCallState("connected");
             setIncomingCall(null);
         } catch (err: any) {
@@ -267,7 +267,12 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
         const streamToRecord = remoteStream || localStream;
         if (!streamToRecord) return;
 
-        const options = { mimeType: "video/webm; codecs=vp9" };
+        const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+            ? "video/webm; codecs=vp9"
+            : MediaRecorder.isTypeSupported("video/webm")
+                ? "video/webm"
+                : "video/mp4";
+        const options = { mimeType };
         const recorder = new MediaRecorder(streamToRecord, options);
 
         recorder.ondataavailable = (event) => {
@@ -277,12 +282,13 @@ export const CommunicationProvider: React.FC<{ children: React.ReactNode }> = ({
         };
 
         recorder.onstop = () => {
-            const blob = new Blob(recordedChunks.current, { type: "video/webm" });
+            const blob = new Blob(recordedChunks.current, { type: mimeType.split(";")[0] });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.style.display = "none";
             a.href = url;
-            a.download = `meeting-record-${Date.now()}.webm`;
+            const ext = mimeType.includes("mp4") ? "mp4" : "webm";
+            a.download = `meeting-record-${Date.now()}.${ext}`;
             document.body.appendChild(a);
             a.click();
             setTimeout(() => {

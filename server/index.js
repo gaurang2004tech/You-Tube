@@ -67,6 +67,8 @@ const io = new Server(server, {
 });
 
 const socketToUser = new Map();
+// Track active calls: userId -> partnerUserId
+const userActiveCalls = new Map();
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
@@ -79,10 +81,14 @@ io.on("connection", (socket) => {
 
   socket.on("call-user", ({ to, offer, fromName, fromId }) => {
     console.log(`Incoming call from ${fromName} to ${to}`);
+    // Track the pending call direction
+    userActiveCalls.set(fromId, to);
     io.to(to).emit("incoming-call", { offer, fromName, fromId });
   });
 
   socket.on("answer-call", ({ to, answer }) => {
+    const answererId = socketToUser.get(socket.id);
+    if (answererId) userActiveCalls.set(answererId, to);
     io.to(to).emit("call-answered", { answer });
   });
 
@@ -91,6 +97,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("end-call", ({ to }) => {
+    const userId = socketToUser.get(socket.id);
+    if (userId) userActiveCalls.delete(userId);
+    if (to) userActiveCalls.delete(to);
     io.to(to).emit("call-ended");
   });
 
@@ -102,6 +111,17 @@ io.on("connection", (socket) => {
     const userId = socketToUser.get(socket.id);
     socketToUser.delete(socket.id);
     console.log(`User disconnected: ${socket.id} (${userId})`);
+
+    // If the user was mid-call, notify the other person
+    if (userId && userActiveCalls.has(userId)) {
+      const partnerId = userActiveCalls.get(userId);
+      userActiveCalls.delete(userId);
+      if (partnerId) {
+        userActiveCalls.delete(partnerId);
+        io.to(partnerId).emit("call-ended");
+        console.log(`Notified ${partnerId} that ${userId} disconnected mid-call`);
+      }
+    }
   });
 });
 
